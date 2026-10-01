@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreMotorCategoryRequest;
 use App\Models\MotorCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class MotorCategoryController extends Controller
 {
@@ -29,9 +31,14 @@ class MotorCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreMotorCategoryRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $validated['slug'] = Str::slug($validated['name']);
+
+        MotorCategory::create($validated);
+
+        return back()->with('success', 'Kategori motor berhasil ditambahkan.');
     }
 
     /**
