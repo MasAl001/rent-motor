@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMotorCategoryRequest;
+use App\Http\Requests\UpdateMotorCategoryRequest;
 use App\Models\MotorCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -60,16 +61,28 @@ class MotorCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, MotorCategory $motorCategory)
+    public function update(UpdateMotorCategoryRequest $request, MotorCategory $category)
     {
-        //
+        $validated = $request->validated();
+
+        $validated['slug'] = Str::slug($validated['name']);
+
+        $category->update($validated);
+
+        return back()->with('success', 'Kategori motor berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(MotorCategory $motorCategory)
+    public function destroy(MotorCategory $category)
     {
-        //
+        if ($category->motors()->exists()) {
+            return back()->with('error', 'Kategori tidak bisa dihapus karena masih dipakai motor.');
+        }
+
+        $category->delete();
+
+        return back()->with('success', 'Kategori berhasil dihapus.');
     }
 }

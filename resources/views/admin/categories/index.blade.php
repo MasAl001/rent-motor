@@ -8,19 +8,13 @@
             x-data=""
             x-on:click.prevent="$dispatch('open-modal', 'create_category')">
             <i class="fa-solid fa-plus mr-2 text-white"></i>
-            Tambah Kategori</a>
+            Kategori</a>
         </div>
     </x-slot>
 
     <div class="py-12">
-        @if (session('status'))
-            <div class="mb-4 bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm">{{ session('status') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="mb-4 bg-red-100 text-red-700 px-4 py-2 rounded-md text-sm">{{ session('error') }}</div>
-        @endif
-
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <x-success-error-message/>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 overflow-x-auto">
                     <table class="table-auto w-full !my-4" id="categories-table">
@@ -41,14 +35,70 @@
                                     <td class="border px-4 py-2 border-black">{{ $category->slug }}</td>
                                     <td class="border px-4 py-2 border-black">{{ $category->motors_count }}</td>
                                     <td class="border px-4 py-2 flex flex-wrap gap-2 items-center border-black">
-                                        <a href="{{ route('admin.categories.edit', $category) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</a>
+                                        <a href="#!" class="bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 text-white font-bold py-2 px-4"
+                                        x-data=""
+                                        x-on:click.prevent="$dispatch('open-modal', 'edit_category{{ $category->id }}')">
+                                        <i class="fas fa-edit text-white"></i></a>
                                         <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline" onsubmit="return confirm('Hapus kategori ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Hapus</button>
+                                            <button type="submit" class="bg-red-600 border border-transparent rounded-md hover:bg-red-700 text-white font-bold py-2 px-4"><i class="fas fa-trash-alt text-white"></i></button>
                                         </form>
                                     </td>
                                 </tr>
+                                @push('scripts')
+                                //Modal for editing a category
+                                <x-modal name="edit_category{{ $category->id }}" max-width="xl" focusable>
+                                    <form method="post" action="{{ route('admin.categories.update', $category->id) }}" class="p-6">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <h2 class="text-lg font-medium text-gray-900">
+                                            {{ __('Edit Category') }}
+                                        </h2>
+
+                                        <div class="mt-6">
+                                            <x-input-label for="name" value="{{ __('Category Name') }}" class="sr-only" />
+
+                                            <x-text-input
+                                                id="name"
+                                                name="name"
+                                                type="text"
+                                                class="mt-1 block w-full"
+                                                placeholder="{{ __('Category Name') }}"
+                                                value="{{ old('name', $category->name) }}"
+                                            />
+
+                                            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                                        </div>
+
+                                        <div class="mt-6">
+                                            <x-input-label for="description" value="{{ __('Description') }}" class="sr-only" />
+
+                                            <x-text-input
+                                                id="description"
+                                                name="description"
+                                                type="text"
+                                                class="mt-1 block w-full"
+                                                placeholder="{{ __('Description') }}"
+                                                value="{{ old('description', $category->description) }}"
+                                            />
+
+                                            <x-input-error :messages="$errors->get('description')" class="mt-2" />
+                                        </div>
+
+                                        <div class="mt-6 flex justify-end">
+                                            <x-secondary-button x-on:click="$dispatch('close')">
+                                                {{ __('Cancel') }}
+                                            </x-secondary-button>
+
+                                            <x-primary-button class="ms-3">
+                                                {{ __('Update Category') }}
+                                            </x-primary-button>
+                                        </div>
+                                    </form>
+                                </x-modal>    
+                                @endpush
                             @empty
                                 <tr>
                                     <td colspan="5" class="px-4 py-6 text-center text-black-400 border border-black">Belum ada kategori.</td>
@@ -66,6 +116,7 @@
     </div>
 
 @push('scripts')
+    // Modal for creating a new category
     <x-modal name="create_category" max-width="xl" focusable>
         <form method="post" action="{{ route('admin.categories.store') }}" class="p-6">
             @csrf

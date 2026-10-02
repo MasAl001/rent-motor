@@ -4,25 +4,18 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Kelola Daftar Motor') }}
             </h2>
-            <x-add-button>
-                <i class="fa-solid fa-plus mr-2 text-white"></i>
-                <a href="">Tambah Motor</a>
-            </x-add-button>
+            <a href="{{ route('admin.motors.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150"
+            <i class="fa-solid fa-plus mr-2 text-white"></i>
+            Motor</a>
         </div>
     </x-slot>
 
     <div class="py-12">
-        @if (session('status'))
-            <div class="mb-4 bg-green-100 text-green-700 px-4 py-2 rounded-md text-sm">{{ session('status') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="mb-4 bg-red-100 text-red-700 px-4 py-2 rounded-md text-sm">{{ session('error') }}</div>
-        @endif
-
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <x-success-error-message/>
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 overflow-x-auto">
-                    <table class="table-auto w-full !my-4" id="categories-table">
+                    <table class="table-auto w-full !my-4" id="motors-table">
                         <thead class="">
                             <tr>
                                 <th class="px-4 py-2 border border-black">ID</th>
